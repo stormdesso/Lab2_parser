@@ -98,6 +98,6 @@ func_dict = {
     "fact_exist": fact_exist,
     "fact_not_exist": fact_not_exist,
 }
-
+fact_base["test_fact2"] = "yes"
 rules_list = custom_parser.parse_json_file("rules.json")
 evaluate_actions(rules_list)

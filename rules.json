@@ -4,6 +4,10 @@
     {
       "if": ["fact_not_exist", "test_fact"],
       "action": [["print", "Hello world!"],["print",["and", ["equal", 1, 2], "True"]]]
+    },
+    {
+      "if": ["fact_exist", "test_fact2"],
+      "action": [["print", "it work"],["print",["or", ["equal", 1, 2], "True"]]]
     }
   ]
 }
