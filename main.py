@@ -1,8 +1,6 @@
 import json
 import custom_parser
 
-fact_base = {}  # факт:   значение
-
 
 def _print(value):
     print(value)
@@ -77,7 +75,7 @@ def read_json(file_name):
     f.close()
 
 
-def evaluate_actions(rules):
+def evaluate_rules(rules):
     for rule in rules:
         if parse(rule[0]):  # проверка условия у правила
             if isinstance(rule[1][0], list):  # список функций
@@ -87,17 +85,43 @@ def evaluate_actions(rules):
                 parse(rule[1])
 
 
-func_dict = {
-    "print": _print,
-    "and": _and,
-    "or": _or,
-    "equal": _equal,
-    "not": _not,
-    "less": _less,
-    "more": _more,
-    "fact_exist": fact_exist,
-    "fact_not_exist": fact_not_exist,
-}
-fact_base["test_fact2"] = "yes"
-rules_list = custom_parser.parse_json_file("rules.json")
-evaluate_actions(rules_list)
+def determinate_fact_base():
+    global fact_base  # факт:   значение
+
+    fact_base = {}
+    fact_base["test_fact2"] = "yes"
+    pass
+
+
+def determinate_function_list():
+    global func_dict
+
+    func_dict = {
+        "print": _print,
+        "and": _and,
+        "or": _or,
+        "equal": _equal,
+        "not": _not,
+        "less": _less,
+        "more": _more,
+        "fact_exist": fact_exist,
+        "fact_not_exist": fact_not_exist,
+    }
+    pass
+
+
+def initialize():
+    determinate_fact_base()  # заполнил базу знаний
+    determinate_function_list()  # определил список функций
+    pass
+
+
+def run():
+    rules_list = custom_parser.parse_json_file("rules.json")
+    evaluate_rules(rules_list)
+    pass
+
+
+if __name__ == "__main__":
+    initialize()
+    run()
