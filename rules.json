@@ -2,9 +2,25 @@
   "rules":
   [
     {
-      "if": ["fact_not_exist", "test_fact"],
-      "action": [["print", "Hello world!"],["print",["and", ["equal", 1, 2], "True"]]]
+      "if": ["and",["fact_not_exist", "solution"], ["fact_not_exist", "unsuitableComponentsNotRemoved"]],
+      "action": [["print", "Can't unsuitable components be removed ? (yes or no): "],["assign", "unsuitableComponentsNotRemoved", ["input_word"]]]
     },
+    {
+      "if": ["and",["fact_not_exist", "solution"], ["fact_not_exist", "unsuitableComponentsNotReplacedWithOthers"]],
+      "action": [["print", "Is it impossible to replace unsuitable components with others ? (yes or no):"],["assign", "unsuitableComponentsNotReplacedWithOthers", ["input_word"]]]
+    },
+    {
+      "if": ["and", ["fact_not_exist", "solution"],
+                    ["fact_not_exist", "componentsNotUpdatedToRequiredVersion"],
+                    ["fact_has_value", "unsuitableComponentsNotRemoved"],
+                    ["fact_has_value", "unsuitableComponentsNotReplacedWithOthers "]
+      ],
+      "action": [["print", "Is it impossible to replace unsuitable components with others ? (yes or no):"],["assign", "unsuitableComponentsNotReplacedWithOthers", ["input_word"]]]
+    },
+
+
+
+
     {
       "if": ["fact_exist", "test_fact2"],
       "action": [["print", "it work"],["print",["or", ["equal", 1, 2], "True"]]]

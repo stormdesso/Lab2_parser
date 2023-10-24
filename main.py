@@ -31,6 +31,24 @@ def _more(a, b):
     return a > b
 
 
+def _input_word():
+    string = input()
+    if str(string).__eq__("y"):
+        return "yes"
+    if str(string).__eq__("n"):
+        return "no"
+
+    print("Не удалось считать значение")
+
+
+def _input_number():
+    n = input()
+    if str(n).isdigit():
+        return n
+
+    print("не удалось считать значение")
+
+
 def parse(element):
     if isinstance(element, list):  # список - функция
         res = []
@@ -54,6 +72,16 @@ def fact_exist(fact_name):
 
 def fact_not_exist(fact_name):
     return not fact_exist(fact_name)
+
+
+def fact_has_value(fact_name):
+    global fact_base
+    value = fact_base[fact_name]
+
+    if fact_name in fact_base and value is not None:
+        return True
+
+    return False
 
 
 def read_json(file_name):
@@ -89,7 +117,6 @@ def determinate_fact_base():
     global fact_base  # факт:   значение
 
     fact_base = {}
-    fact_base["test_fact2"] = "yes"
     pass
 
 
@@ -106,7 +133,18 @@ def determinate_function_list():
         "more": _more,
         "fact_exist": fact_exist,
         "fact_not_exist": fact_not_exist,
+        "input_word": _input_word,
+        "input_number": _input_number,
+        "assign": assign,
+        "fact_has_value": fact_has_value
+
     }
+    pass
+
+
+def assign(fact, value):
+    global fact_base
+    fact_base[fact] = value
     pass
 
 
@@ -125,3 +163,4 @@ def run():
 if __name__ == "__main__":
     initialize()
     run()
+    print(fact_base)
