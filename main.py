@@ -7,12 +7,26 @@ def _print(value):
     pass
 
 
-def _and(a, b):
-    return a and b
+def _get_fact_value(fact_name):
+    return fact_base[fact_name]
 
 
-def _or(a, b):
-    return a or b
+def _and(*elements):
+    result = True
+
+    for element in elements:
+        result *= element
+
+    return bool(result)
+
+
+def _or(*elements):
+    result = False
+
+    for element in elements:
+        result += element
+
+    return bool(result)
 
 
 def _equal(a, b):
@@ -24,11 +38,11 @@ def _not(a):
 
 
 def _less(a, b):
-    return a < b
+    return int(a) < int(b)
 
 
 def _more(a, b):
-    return a > b
+    return int(a) > int(b)
 
 
 def _input_word():
@@ -76,12 +90,29 @@ def fact_not_exist(fact_name):
 
 def fact_has_value(fact_name):
     global fact_base
-    value = fact_base[fact_name]
+    try:
+        value = fact_base[fact_name]
+    except:
+        print("Факт,", fact_name, " не найден")
+        return False
 
     if fact_name in fact_base and value is not None:
         return True
 
     return False
+
+def fact_has_no_value(fact_name):
+    global fact_base
+    try:
+        value = fact_base[fact_name]
+    except:
+        print("Факт,", fact_name, " не найден")
+        return True
+
+    if fact_name in fact_base and value is not None:
+        return False
+
+    return True
 
 
 def read_json(file_name):
@@ -136,7 +167,9 @@ def determinate_function_list():
         "input_word": _input_word,
         "input_number": _input_number,
         "assign": assign,
-        "fact_has_value": fact_has_value
+        "fact_has_value": fact_has_value,
+        "get_fact_value": _get_fact_value,
+        "fact_has_no_value": fact_has_no_value
 
     }
     pass
@@ -157,10 +190,10 @@ def initialize():
 def run():
     rules_list = custom_parser.parse_json_file("rules.json")
     evaluate_rules(rules_list)
+    print("\nБаза фактов:\n", fact_base)
     pass
 
 
 if __name__ == "__main__":
     initialize()
     run()
-    print(fact_base)

@@ -3,23 +3,398 @@
   [
     {
       "if": ["and",["fact_not_exist", "solution"], ["fact_not_exist", "unsuitableComponentsNotRemoved"]],
-      "action": [["print", "Can't unsuitable components be removed ? (yes or no): "],["assign", "unsuitableComponentsNotRemoved", ["input_word"]]]
+      "action": [ ["print", "Can't unsuitable components be removed ? (yes or no): "],
+                  ["assign", "unsuitableComponentsNotRemoved", ["input_word"]]]
     },
     {
       "if": ["and",["fact_not_exist", "solution"], ["fact_not_exist", "unsuitableComponentsNotReplacedWithOthers"]],
-      "action": [["print", "Is it impossible to replace unsuitable components with others ? (yes or no):"],["assign", "unsuitableComponentsNotReplacedWithOthers", ["input_word"]]]
+      "action": [ ["print", "Is it impossible to replace unsuitable components with others ? (yes or no):"],
+                  ["assign", "unsuitableComponentsNotReplacedWithOthers", ["input_word"]]]
     },
     {
       "if": ["and", ["fact_not_exist", "solution"],
                     ["fact_not_exist", "componentsNotUpdatedToRequiredVersion"],
                     ["fact_has_value", "unsuitableComponentsNotRemoved"],
-                    ["fact_has_value", "unsuitableComponentsNotReplacedWithOthers "]
+                    ["fact_has_value", "unsuitableComponentsNotReplacedWithOthers"],
+                    ["or",
+                      ["equal", ["get_fact_value", "unsuitableComponentsNotRemoved"], "yes"],
+                      ["equal", ["get_fact_value", "unsuitableComponentsNotReplacedWithOthers"], "yes"]
+                    ]
+            ],
+      "action": [ ["print", "You cannot update components to the desired version!"],
+                  ["assign", "componentsNotUpdatedToRequiredVersion", "yes"]]
+    },
+
+    {
+      "if": ["not",["and", ["fact_not_exist", "solution"],
+                    ["fact_has_value", "unsuitableComponentsNotRemoved"],
+                    ["fact_has_value", "unsuitableComponentsNotReplacedWithOthers"],
+                    ["or",
+                      ["equal", ["get_fact_value", "unsuitableComponentsNotRemoved"], "yes"],
+                      ["equal", ["get_fact_value", "unsuitableComponentsNotReplacedWithOthers"], "yes"]
+                    ]
+            ]],
+      "action": ["assign", "componentsNotUpdatedToRequiredVersion", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "componentsNotUpdatedToRequiredVersion"],
+              ["fact_not_exist", "componentVersionIncompatibilityErrors"],
+              ["equal", ["get_fact_value", "componentsNotUpdatedToRequiredVersion"], "yes"]
+            ],
+      "action": [ ["print", "There are component version incompatibility errors "],
+                  ["assign", "componentVersionIncompatibilityErrors", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "componentsNotUpdatedToRequiredVersion"],
+              ["equal", ["get_fact_value", "componentsNotUpdatedToRequiredVersion"], "no"]
+            ],
+      "action": ["assign", "componentVersionIncompatibilityErrors", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "impossibleToPhysicallyCorrectErrors"]
+            ],
+      "action": [ ["print", "Is it impossible to physically correct errors? (yes or no):"],
+                  ["assign", "impossibleToPhysicallyCorrectErrors", ["input_word"]]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "notEnoughKnowledgeToFixError"]
+            ],
+      "action": [ ["print", "Don 't have enough knowledge to fix the error? (yes or no): "],
+                  ["assign", "notEnoughKnowledgeToFixError", ["input_word"]]]
+    },
+
+     {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "impossibleLocalizeError"],
+              ["fact_has_value", "impossibleToPhysicallyCorrectErrors"],
+              ["fact_has_value", "notEnoughKnowledgeToFixError"],
+              ["equal", ["get_fact_value", "impossibleToPhysicallyCorrectErrors"], "yes"],
+              ["equal", ["get_fact_value", "notEnoughKnowledgeToFixError"], "yes"]
+            ],
+      "action": [ ["print", "impossible localize error"],
+                  ["assign", "impossibleLocalizeError", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "impossibleToPhysicallyCorrectErrors"],
+              ["fact_has_value", "notEnoughKnowledgeToFixError"],
+
+              ["or",
+                ["equal", ["get_fact_value", "impossibleToPhysicallyCorrectErrors"], "no"],
+                ["equal", ["get_fact_value", "notEnoughKnowledgeToFixError"], "no"]
+              ]
+
+            ],
+      "action": ["assign", "impossibleLocalizeError", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "reasonForErrorIsUnclear"],
+              ["fact_has_value", "impossibleToPhysicallyCorrectErrors"],
+              ["equal", ["get_fact_value", "impossibleToPhysicallyCorrectErrors"], "yes"]
+            ],
+      "action":[ ["print", "reason for error is unclear"],
+                  ["assign", "reasonForErrorIsUnclear", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "impossibleToPhysicallyCorrectErrors"],
+              ["equal", ["get_fact_value", "impossibleToPhysicallyCorrectErrors"], "no"]
+            ],
+      "action": ["assign", "reasonForErrorIsUnclear", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "criticalErrors"],
+              ["fact_has_value", "impossibleLocalizeError"],
+              ["fact_has_value", "reasonForErrorIsUnclear"],
+              ["or",
+                ["equal", ["get_fact_value", "impossibleLocalizeError"], "yes"],
+                ["equal", ["get_fact_value", "reasonForErrorIsUnclear"], "yes"]
+              ]
+            ],
+      "action": [ ["print", "Critical errors (on the test server)!"],
+                  ["assign", "criticalErrors", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "impossibleLocalizeError"],
+              ["fact_has_value", "reasonForErrorIsUnclear"],
+              ["and",
+                ["equal", ["get_fact_value", "impossibleLocalizeError"], "no"],
+                ["equal", ["get_fact_value", "reasonForErrorIsUnclear"], "no"]
+              ]
+            ],
+      "action": ["assign", "criticalErrors", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "errorsWhenTryingDeployToProductionServer"]
+            ],
+      "action": [["print", "Did you get errors when trying to deploy to a production server?? (yes or no): "],
+                ["assign", "errorsWhenTryingDeployToProductionServer", ["input_word"]]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "bugsExist"],
+              ["fact_has_value", "criticalErrors"],
+              ["fact_has_value", "errorsWhenTryingDeployToProductionServer"],
+              ["or",
+                ["equal", ["get_fact_value", "criticalErrors"], "yes"],
+                ["equal", ["get_fact_value", "errorsWhenTryingDeployToProductionServer"], "yes"]
+              ]
+            ],
+      "action": [ ["print", "You have bugs!"],
+                  ["assign", "bugsExist", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "criticalErrors"],
+              ["fact_has_value", "errorsWhenTryingDeployToProductionServer"],
+              ["and",
+                ["equal", ["get_fact_value", "criticalErrors"], "no"],
+                ["equal", ["get_fact_value", "errorsWhenTryingDeployToProductionServer"], "no"]
+              ]
+            ],
+      "action": ["assign", "bugsExist", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "notCompiled"],
+              ["fact_has_value", "bugsExist"],
+              ["fact_has_value", "componentVersionIncompatibilityErrors"],
+              ["or",
+                ["equal", ["get_fact_value", "bugsExist"], "yes"],
+                ["equal", ["get_fact_value", "componentVersionIncompatibilityErrors"], "yes"]
+              ]
       ],
-      "action": [["print", "Is it impossible to replace unsuitable components with others ? (yes or no):"],["assign", "unsuitableComponentsNotReplacedWithOthers", ["input_word"]]]
+      "action": [ ["print", "The code is not compiled"],
+                  ["assign", "notCompiled", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "bugsExist"],
+              ["fact_has_value", "componentVersionIncompatibilityErrors"],
+              ["and",
+                ["equal", ["get_fact_value", "bugsExist"], "no"],
+                ["equal", ["get_fact_value", "componentVersionIncompatibilityErrors"], "no"]
+              ]
+      ],
+      "action": [ ["assign", "notCompiled", "no"],
+                  ["print", "Answer a few more questions..."]]
     },
 
 
 
+
+
+
+
+
+
+
+
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "unitTest "]
+      ],
+      "action": [["print", "All unit-tests are executed without warnings?(yes or no): "],
+                  ["assign", "unitTest", ["input_word"]]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "integrationTest"]
+      ],
+      "action": [["print", "All integration-tests are executed without warnings?(yes or no): "],
+                  ["assign", "integrationTest", ["input_word"]]
+                  ]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "smokeTest"]
+      ],
+      "action": [ ["print", "All smoke-tests are executed without warnings?(yes or no): "],
+                  ["assign", "smokeTest", ["input_word"]]
+                  ]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "allTestPassedWithoutWarn"],
+              ["fact_has_value", "unitTest"],
+              ["fact_has_value", "integrationTest"],
+              ["fact_has_value", "smokeTest"],
+              ["and",
+                 ["equal", ["get_fact_value", "unitTest"], "yes"],
+                 ["equal", ["get_fact_value", "integrationTest"], "yes"],
+                 ["equal", ["get_fact_value", "smokeTest"], "yes"]
+              ]
+      ],
+      "action": [  ["print", "All test passed-without-warnings"],
+                    ["assign", "allTestPassedWithoutWarn", "yes"]
+                 ]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "allTestPassedWithoutWarn"],
+              ["fact_has_value", "unitTest"],
+              ["fact_has_value", "integrationTest"],
+              ["fact_has_value", "smokeTest"],
+              ["or",
+                 ["equal", ["get_fact_value", "unitTest"], "no"],
+                 ["equal", ["get_fact_value", "integrationTest"], "no"],
+                 ["equal", ["get_fact_value", "smokeTest"], "no"]
+              ]
+      ],
+      "action": ["assign", "allTestPassedWithoutWarn", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "no"]
+
+      ],
+      "action": [ ["print", "Enter number of warnings: "],
+                  ["assign", "numberOfWarnings", ["input_number"]]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_not_exist", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "yes"]
+      ],
+      "action": [ ["assign", "allTestPassedLessThanTenWarnings", "yes"],
+                  ["assign", "numberOfWarnings", 0]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "no"],
+              ["less", ["get_fact_value", "numberOfWarnings"], 10]
+      ],
+      "action": ["assign", "allTestPassedLessThanTenWarnings", "yes"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "no"],
+              ["more", ["get_fact_value", "numberOfWarnings"], 9]
+      ],
+      "action": ["assign", "allTestPassedLessThanTenWarnings", "no"]
+    },
+
+
+
+
+
+
+
+
+
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "allTestPassedLessThanTenWarnings"],
+              ["fact_has_value", "allTestPassedWithoutWarn"],
+              ["or",
+                ["equal", ["get_fact_value", "allTestPassedLessThanTenWarnings"], "yes"],
+                ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "yes"]
+              ]
+      ],
+      "action": [ ["print", "Unfolding in production"],
+                  ["assign", "unfoldingInProduction", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "allTestPassedLessThanTenWarnings"],
+              ["fact_has_value", "allTestPassedWithoutWarn"],
+              ["and",
+                ["equal", ["get_fact_value", "allTestPassedLessThanTenWarnings"], "no"],
+                ["equal", ["get_fact_value", "allTestPassedWithoutWarn"], "no"]
+              ]
+      ],
+      "action": ["assign", "unfoldingInProduction", "no"]
+    },
+
+    {
+      "if": ["and",
+              ["fact_not_exist", "solution"],
+              ["fact_has_value", "unfoldingInProduction"],
+              ["fact_has_value", "notCompiled"],
+              ["fact_has_value", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "unfoldingInProduction"], "yes"]
+
+      ],
+      "action": [ ["print", "Deploy!"],
+                  ["assign", "solution", "yes"]]
+    },
+
+    {
+      "if": ["and",
+              ["fact_has_value", "unfoldingInProduction"],
+              ["fact_has_value", "notCompiled"],
+              ["fact_has_value", "numberOfWarnings"],
+              ["equal", ["get_fact_value", "unfoldingInProduction"], "no"],
+              ["or",
+                 ["equal", ["get_fact_value", "notCompiled"], "yes"],
+                 ["more", ["get_fact_value", "numberOfWarnings"], 9]
+              ]
+      ],
+      "action": [ ["print", "Not deploy!"],
+                  ["assign", "solution", "no"]]
+    },
 
     {
       "if": ["fact_exist", "test_fact2"],
